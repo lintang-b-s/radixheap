@@ -196,6 +196,7 @@ func BenchmarkRadixHeapSimple(b *testing.B) {
 }
 
 // ------ stdlib container/heap benchmark ------
+// adapted from: https://pkg.go.dev/container/heap
 
 // An IntHeap is a min-heap of ints.
 type IntHeap []uint32
