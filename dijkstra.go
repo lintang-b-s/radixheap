@@ -2,13 +2,13 @@ package radixheap
 
 import "container/heap"
 
-type edge[T UnsignedKeyType] struct {
+type edge[T unsignedKeyType] struct {
 	v      uint32
 	weight T
 }
 
 // dijkstra dijkstra Single-Source Shortest path. lazy-deletion version + radix heap.
-func dijkstra[T UnsignedKeyType](s uint32, adjList [][]edge[T]) []T {
+func dijkstra[T unsignedKeyType](s uint32, adjList [][]edge[T]) []T {
 	n := len(adjList)
 	rdx := NewRadixHeap[T, uint32]()
 	dist := make([]T, n)
@@ -38,13 +38,13 @@ func dijkstra[T UnsignedKeyType](s uint32, adjList [][]edge[T]) []T {
 // priority queue code adapted from: https://pkg.go.dev/container/heap
 
 // An item is something we manage in a priority queue.
-type item[T UnsignedKeyType] struct {
+type item[T unsignedKeyType] struct {
 	vertex   uint32
 	priority T
 	index    int
 }
 
-type priorityQueue[T UnsignedKeyType] []*item[T]
+type priorityQueue[T unsignedKeyType] []*item[T]
 
 func (pq priorityQueue[T]) Len() int { return len(pq) }
 
@@ -75,7 +75,7 @@ func (pq *priorityQueue[T]) Pop() any {
 	return item
 }
 
-func dijkstraStdLibPq[T UnsignedKeyType](s uint32, adjList [][]edge[T]) []T {
+func dijkstraStdLibPq[T unsignedKeyType](s uint32, adjList [][]edge[T]) []T {
 	n := len(adjList)
 	dist := make([]T, n)
 	for i := range dist {

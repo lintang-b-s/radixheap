@@ -12,20 +12,21 @@ import (
 	"math/bits"
 )
 
-type UnsignedKeyType interface {
+type unsignedKeyType interface {
 	uint32 | uint64
 }
 
-type pair[T UnsignedKeyType, G comparable] struct {
+type pair[T unsignedKeyType, G comparable] struct {
 	key   T
 	value G
 }
 
-func newPair[T UnsignedKeyType, G comparable](k T, v G) pair[T, G] {
+func newPair[T unsignedKeyType, G comparable](k T, v G) pair[T, G] {
 	return pair[T, G]{k, v}
 }
 
-type RadixHeap[T UnsignedKeyType, G comparable] struct {
+// RadixHeap represents an RadixHeap, a monotone priority queue using binary representation of unsigned integers.
+type RadixHeap[T unsignedKeyType, G comparable] struct {
 	// the size (number of pairs inserted) of the radix heap
 	size uint64
 	// last extracted key.
@@ -41,11 +42,12 @@ type RadixHeap[T UnsignedKeyType, G comparable] struct {
 	isUint32 bool
 }
 
-func infinity[T UnsignedKeyType]() T {
+func infinity[T unsignedKeyType]() T {
 	return ^T(0)
 }
 
-func NewRadixHeap[T UnsignedKeyType, G comparable]() *RadixHeap[T, G] {
+// NewRadixHeap returns an RadixHeap
+func NewRadixHeap[T unsignedKeyType, G comparable]() *RadixHeap[T, G] {
 	keyBits := bits.OnesCount64(uint64(^T(0)))
 	bucketsCount := 0
 	isUint32 := false
@@ -83,7 +85,9 @@ func (r *RadixHeap[T, G]) findBucket(x T) uint64 {
 	return uint64(i)
 }
 
-// Insert insert (key, val) pair into the radix heap. O(1) amortized
+// Insert insert (key, val) pair into the radix heap.
+//
+// O(1) amortized
 func (r *RadixHeap[T, G]) Insert(key T, val G) {
 	r.size++
 	bucket := r.findBucket(key)                                      // find bucket to insert pair (key,val). O(1).
@@ -92,6 +96,7 @@ func (r *RadixHeap[T, G]) Insert(key T, val G) {
 }
 
 // ExtractMin returns minimum-key pair (key,val) and delete this pair from the radix heap.
+//
 // extract-min performed as follows. if bucket 0 is nonempty, return any pair in bucket 0.
 //
 // otherwise, find the nonempty bucket of smallest index, say bucket j, returns minimum-key pair in this bucket j,
@@ -104,6 +109,7 @@ func (r *RadixHeap[T, G]) Insert(key T, val G) {
 // why? after all n extract-min operations, for each pair, the distribute operations for this pair from old position to the latest position (until this pair extracted from the pq) has total cost at most O(logC),
 // this is because the number of buckets is ceil(log(C+1))+1. summing over all n pairs inserted in this n sequence of insert and extract-min operations, we got total cost O(n*logC)
 // the amortized (aggregate analysis) cost of an extract-min operation is O(n*logc)/n=O(logC)
+//
 // amortized O(logC), where C=maximum key of any priority queue node (in this implementation  C=MaxUint32 or MaxUint64)
 func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 	if len(r.buckets[0]) == 0 {
@@ -140,6 +146,7 @@ func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 	return minPair.key, minPair.value
 }
 
+// Empty returns wether radixheap is empty.
 func (r *RadixHeap[T, G]) Empty() bool {
 	return r.size == 0
 }
