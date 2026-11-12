@@ -179,7 +179,7 @@ func readLine(br *bufio.Reader) (string, error) {
 	return strings.TrimRight(line, "\r\n"), nil
 }
 
-func readDimacs(b *testing.B, mapCoordpath, mapEdgesPath string) [][]edge[uint32] {
+func readDimacs(b *testing.B, mapCoordpath, mapEdgesPath string) [][]edge[uint64] {
 	b.Helper()
 
 	f, err := os.OpenFile(filepath.Clean(mapCoordpath), os.O_RDONLY, 0600) //nolint:gosec // benchmark input file
@@ -275,7 +275,7 @@ func readDimacs(b *testing.B, mapCoordpath, mapEdgesPath string) [][]edge[uint32
 		}
 	}
 
-	adjList := make([][]edge[uint32], n)
+	adjList := make([][]edge[uint64], n)
 	minWeight := math.MaxInt64
 	maxWeight := math.MinInt64
 	for i := 0; i < m; i++ {
@@ -305,7 +305,7 @@ func readDimacs(b *testing.B, mapCoordpath, mapEdgesPath string) [][]edge[uint32
 			maxWeight = weight
 		}
 
-		adjList[u] = append(adjList[u], edge[uint32]{uint32(v), uint32(weight)})
+		adjList[u] = append(adjList[u], edge[uint64]{uint32(v), uint64(weight)})
 	}
 
 	return adjList
@@ -315,12 +315,14 @@ func readDimacs(b *testing.B, mapCoordpath, mapEdgesPath string) [][]edge[uint32
 // or download via: https://drive.google.com/file/d/1PGu7qRvp11jFr1mIg7QpLJb3eEj6L5Tr/view?usp=sharing and https://drive.google.com/file/d/1shyuOvMPLDfFDS3r9REx2sR7GTKNXkwL/view?usp=sharing
 // go test -run=^$ -bench=^BenchmarkDijkstraRadixHeap$  -benchtime=60s  -benchmem
 // cpu: AMD Ryzen 5 7540U w/ Radeon(TM) 740M Graphics
-// BenchmarkDijkstraRadixHeap-12                 20                 3.506 s/op     99193557 B/op        358 allocs/op
+// BenchmarkDijkstraRadixHeap-12    	      15	         4.462 s/op	199481824 B/op	     368 allocs/op
 func BenchmarkDijkstraRadixHeap(b *testing.B) {
 	graph := readDimacs(b, "USA-road-d.USA.co", "USA-road-t.USA.gr")
-	n := len(graph)
+	seed1, seed2 := rand.Uint64(), rand.Uint64()
+	r := rand.New(rand.NewPCG(seed1, seed2))
+	n := uint32(len(graph))
 	for b.Loop() {
-		s := rand.Uint32N(uint32(n))
+		s := r.Uint32N(n)
 		dijkstra(s, graph)
 	}
 	b.ReportMetric(b.Elapsed().Seconds()/float64(b.N), "s/op")
@@ -329,13 +331,14 @@ func BenchmarkDijkstraRadixHeap(b *testing.B) {
 
 // go test -run=^$ -bench=^BenchmarkDijkstraStdLibHeap$  -benchtime=60s  -benchmem
 // cpu: AMD Ryzen 5 7540U w/ Radeon(TM) 740M Graphics
-// BenchmarkDijkstraStdLibHeap-12                 8                 7.909 s/op     505327374 B/op  25575164 allocs/op
+// BenchmarkDijkstraStdLibHeap-12    	       3	        10.17 s/op	805779026 B/op	25575264 allocs/op
 func BenchmarkDijkstraStdLibHeap(b *testing.B) {
 	graph := readDimacs(b, "USA-road-d.USA.co", "USA-road-t.USA.gr")
-	n := len(graph)
-
+	seed1, seed2 := rand.Uint64(), rand.Uint64()
+	r := rand.New(rand.NewPCG(seed1, seed2))
+	n := uint32(len(graph))
 	for b.Loop() {
-		s := rand.Uint32N(uint32(n))
+		s := r.Uint32N(n)
 		dijkstraStdLibPq(s, graph)
 	}
 	b.ReportMetric(b.Elapsed().Seconds()/float64(b.N), "s/op")

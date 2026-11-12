@@ -44,28 +44,28 @@ type item[T UnsignedKeyType] struct {
 	index    int
 }
 
-type PriorityQueue[T UnsignedKeyType] []*item[T]
+type priorityQueue[T UnsignedKeyType] []*item[T]
 
-func (pq PriorityQueue[T]) Len() int { return len(pq) }
+func (pq priorityQueue[T]) Len() int { return len(pq) }
 
-func (pq PriorityQueue[T]) Less(i, j int) bool {
+func (pq priorityQueue[T]) Less(i, j int) bool {
 	return pq[i].priority < pq[j].priority
 }
 
-func (pq PriorityQueue[T]) Swap(i, j int) {
+func (pq priorityQueue[T]) Swap(i, j int) {
 	pq[i], pq[j] = pq[j], pq[i]
 	pq[i].index = i
 	pq[j].index = j
 }
 
-func (pq *PriorityQueue[T]) Push(x any) {
+func (pq *priorityQueue[T]) Push(x any) {
 	n := len(*pq)
 	item := x.(*item[T])
 	item.index = n
 	*pq = append(*pq, item)
 }
 
-func (pq *PriorityQueue[T]) Pop() any {
+func (pq *priorityQueue[T]) Pop() any {
 	old := *pq
 	n := len(old)
 	item := old[n-1]
@@ -83,7 +83,7 @@ func dijkstraStdLibPq[T UnsignedKeyType](s uint32, adjList [][]edge[T]) []T {
 	}
 	dist[s] = 0
 
-	pq := make(PriorityQueue[T], 0)
+	pq := make(priorityQueue[T], 0)
 	heap.Push(&pq, &item[T]{vertex: s, priority: 0})
 
 	for pq.Len() != 0 {

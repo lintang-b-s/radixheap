@@ -158,8 +158,10 @@ func TestHeapSortLike(t *testing.T) {
 	n := uint32(5_000_000)
 	rdx := NewRadixHeap[uint32, uint32]()
 	wantSortedArr := make([]uint32, n)
+	seed1, seed2 := rand.Uint64(), rand.Uint64()
+	r := rand.New(rand.NewPCG(seed1, seed2))
 	for i := uint32(0); i < n; i++ {
-		key := rand.Uint32N(math.MaxUint32)
+		key := r.Uint32N(math.MaxUint32)
 		rdx.Insert(key, key)
 		wantSortedArr[i] = key
 	}
@@ -182,15 +184,16 @@ func BenchmarkRadixHeapSimple(b *testing.B) {
 	n := uint32(32_000_000)
 	maxi := uint32(math.MaxUint32)
 	rdx := NewRadixHeap[uint32, uint32]()
-
+	seed1, seed2 := rand.Uint64(), rand.Uint64()
+	r := rand.New(rand.NewPCG(seed1, seed2))
 	for i := uint32(0); i < n; i++ {
-		key := rand.Uint32N(maxi)
+		key := r.Uint32N(maxi)
 		rdx.Insert(uint32(key), i)
 	}
 
 	for b.Loop() {
 		mkey, _ := rdx.ExtractMin()
-		rkey := mkey + rand.Uint32N(maxi-mkey)
+		rkey := mkey + r.Uint32N(maxi-mkey)
 		rdx.Insert(rkey, rkey)
 	}
 }
@@ -226,15 +229,16 @@ func BenchmarkStdLibHeapSimple(b *testing.B) {
 	maxi := uint32(math.MaxUint32)
 	h := &IntHeap{}
 	heap.Init(h)
-
+	seed1, seed2 := rand.Uint64(), rand.Uint64()
+	r := rand.New(rand.NewPCG(seed1, seed2))
 	for i := uint32(0); i < n; i++ {
-		key := rand.Uint32N(maxi)
+		key := r.Uint32N(maxi)
 		heap.Push(h, key)
 	}
 
 	for b.Loop() {
 		mkey := heap.Pop(h).(uint32)
-		rkey := mkey + rand.Uint32N(maxi-mkey)
+		rkey := mkey + r.Uint32N(maxi-mkey)
 		heap.Push(h, rkey)
 	}
 }

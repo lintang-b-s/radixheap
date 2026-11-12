@@ -1,6 +1,9 @@
 # radixheap
 
-an radix heap implementation for Go. Radix heap ([[1]](#ref1)) is a monotone priority queue using binary representation of unsigned integers. A monotone priority is a priority queue that the keys returned by successive extract-min calls are monotonically increasing, like in dijkstra algorithm. The cost of extract-min operation is amortized O(logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32/MaxUint64), and insert is amortized O(1). A radix heap can be implemented to speed up Dijkstra's algorithm when edge weights are unsigned integers, as described in the paper [[1]](#ref1).
+[![GoDoc](https://godoc.org/github.com/lintang-b-s/radixheap?status.svg)](https://godoc.org/github.com/lintang-b-s/radixheap)
+[![codecov](https://codecov.io/github/lintang-b-s/radixheap/graph/badge.svg?token=AVXOSD6FQH)](https://codecov.io/github/lintang-b-s/radixheap)
+
+an radix heap implementation for Go. Radix heap [[1]](#ref1) is a monotone priority queue using binary representation of unsigned integers. A monotone priority is a priority queue that the keys returned by successive extract-min calls are monotonically increasing, like in dijkstra algorithm. The cost of extract-min operation is amortized O(logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32/MaxUint64), and insert is amortized O(1). A radix heap can be implemented to speed up Dijkstra's algorithm when edge weights are unsigned integers, as described in the paper [[1]](#ref1).
 
 ## Usage
 
@@ -48,9 +51,9 @@ BenchmarkStdLibHeapSimple-12            33725971               573.8 ns/op      
 Dijkstra Single-source shortest path (SSSP) on DIMACS 9th implementation challenge USA Road Network Graph ([download](https://web.archive.org/web/20261020102152/https://www.diag.uniroma1.it/~challenge9/download.shtml)), with 23million vertices & 58 million edges.
 
 ```
-BenchmarkDijkstraRadixHeap-12                 20                 3.506 s/op     99193557 B/op        358 allocs/op
+BenchmarkDijkstraRadixHeap-12    	      15	         4.462 s/op	199481824 B/op	     368 allocs/op
 
-BenchmarkDijkstraStdLibHeap-12                 8                 7.909 s/op     505327374 B/op  25575164 allocs/op
+BenchmarkDijkstraStdLibHeap-12    	       3	        10.17 s/op	805779026 B/op	25575264 allocs/op
 ```
 
 ## References and Acknowledgment
