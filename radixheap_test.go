@@ -1,6 +1,7 @@
 package radixheap
 
 import (
+	"container/heap"
 	"math"
 	"math/rand/v2"
 	"slices"
@@ -191,5 +192,48 @@ func BenchmarkRadixHeapSimple(b *testing.B) {
 		mkey, _ := rdx.ExtractMin()
 		rkey := mkey + rand.Uint32N(maxi-mkey)
 		rdx.Insert(rkey, rkey)
+	}
+}
+
+// ------ stdlib container/heap benchmark ------
+
+// An IntHeap is a min-heap of ints.
+type IntHeap []uint32
+
+func (h IntHeap) Len() int           { return len(h) }
+func (h IntHeap) Less(i, j int) bool { return h[i] < h[j] }
+func (h IntHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *IntHeap) Push(x any) {
+	// Push and Pop use pointer receivers because they modify the slice's length,
+	// not just its contents.
+	*h = append(*h, x.(uint32))
+}
+
+func (h *IntHeap) Pop() any {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
+// go test -run=^$ -bench=^BenchmarkStdLibHeapSimple$  -benchtime=15s  -benchmem
+// BenchmarkStdLibHeapSimple-12            33725971               573.8 ns/op             8 B/op          1 allocs/op
+func BenchmarkStdLibHeapSimple(b *testing.B) {
+	n := uint32(32_000_000)
+	maxi := uint32(math.MaxUint32)
+	h := &IntHeap{}
+	heap.Init(h)
+
+	for i := uint32(0); i < n; i++ {
+		key := rand.Uint32N(maxi)
+		heap.Push(h, key)
+	}
+
+	for b.Loop() {
+		mkey := heap.Pop(h).(uint32)
+		rkey := mkey + rand.Uint32N(maxi-mkey)
+		heap.Push(h, rkey)
 	}
 }

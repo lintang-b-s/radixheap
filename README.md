@@ -39,6 +39,8 @@ Simple insert & extract-min operations, preinsert 32 millions pairs.
 
 ```
 BenchmarkRadixHeapSimple-12     18651518                77.19 ns/op           45 B/op          0 allocs/op
+
+BenchmarkStdLibHeapSimple-12            33725971               573.8 ns/op             8 B/op          1 allocs/op
 ```
 
 ### Dijkstra SSSP USA road network DIMACS

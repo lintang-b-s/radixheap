@@ -35,9 +35,9 @@ type RadixHeap[T UnsignedKeyType, G comparable] struct {
 	// each bucket contains (key, value) pairs, with lower buckets store pairs with smaller key.
 	// this one-level radix heap contains ceil(log(C+1))+1 buckets, where C=maximum key of any priority queue node (in this implementation  C=MaxUint32/MaxUint64).
 	buckets [][]pair[T, G]
-	// i-th bucketMin contains the minimum-key pair of that i-th bucket
+	// i-th bucketMin contains the minimum-key pair of the i-th bucket
 	bucketsMin []T
-	// is the key type is uint32
+	// is the key type uint32
 	isUint32 bool
 }
 
