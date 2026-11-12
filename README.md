@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/lintang-b-s/radixheap?status.svg)](https://godoc.org/github.com/lintang-b-s/radixheap)
 [![codecov](https://codecov.io/github/lintang-b-s/radixheap/graph/badge.svg?token=AVXOSD6FQH)](https://codecov.io/github/lintang-b-s/radixheap)
 
-an radix heap implementation for Go. Radix heap [[1]](#ref1) is a monotone priority queue using binary representation of unsigned integers. A monotone priority is a priority queue that the keys returned by successive extract-min calls are monotonically increasing, like in dijkstra algorithm. The cost of extract-min operation is amortized O(logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32/MaxUint64), and insert is amortized O(1). A radix heap can be implemented to speed up Dijkstra's algorithm when edge weights are unsigned integers, as described in the paper [[1]](#ref1).
+an radix heap implementation for Go. Radix heap [[1]](#ref1) is a monotone priority queue using binary representation of unsigned integers. A monotone priority is a priority queue that the keys returned by successive `extract-min` calls are monotonically increasing, like in dijkstra algorithm. The cost of `extract-min` operation is amortized O(logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32 or MaxUint64), and `insert` is amortized O(1). A radix heap can be implemented to speed up Dijkstra's algorithm when edge weights are unsigned integers, as described in the paper [[1]](#ref1).
 
 ## Usage
 
@@ -38,7 +38,7 @@ fmt.Print(minKey, minVal) // print 2, 20
 
 ### Simple insert & extract-min operations
 
-Simple insert & extract-min operations, preinsert 32 millions pairs.
+Simple `insert` & `extract-min` operations, preinsert 32 millions pairs. see `radixheap_test.go`
 
 ```
 BenchmarkRadixHeapSimple-12     18651518                77.19 ns/op           45 B/op          0 allocs/op
@@ -48,7 +48,7 @@ BenchmarkStdLibHeapSimple-12            33725971               573.8 ns/op      
 
 ### Dijkstra SSSP USA road network DIMACS
 
-Dijkstra Single-source shortest path (SSSP) on DIMACS 9th implementation challenge USA Road Network Graph ([download](https://web.archive.org/web/20261020102152/https://www.diag.uniroma1.it/~challenge9/download.shtml)), with 23million vertices & 58 million edges.
+Dijkstra Single-source shortest path (SSSP) on DIMACS 9th implementation challenge USA Road Network Graph ([download](https://web.archive.org/web/20261020102152/https://www.diag.uniroma1.it/~challenge9/download.shtml)), with 23million vertices & 58 million edges. see `dijkstra_test.go`.
 
 ```
 BenchmarkDijkstraRadixHeap-12    	      15	         4.462 s/op	199481824 B/op	     368 allocs/op

@@ -33,7 +33,7 @@ type RadixHeap[T UnsignedKeyType, G comparable] struct {
 	// this lastExtractedKey store the distance from s (or key of the priority queue node) of the latest extracted vertex in current iteration of dijkstra.
 	lastExtractedKey T
 	// each bucket contains (key, value) pairs, with lower buckets store pairs with smaller key.
-	// this one-level radix heap contains ceil(log(C+1))+1 buckets, where C=maximum key of any priority queue node (in this implementation  C=MaxUint32/MaxUint64).
+	// this one-level radix heap contains ceil(log(C+1))+1 buckets, where C=maximum key of any priority queue node (in this implementation  C=MaxUint32 or MaxUint64).
 	buckets [][]pair[T, G]
 	// i-th bucketMin contains the minimum-key pair of the i-th bucket
 	bucketsMin []T
@@ -100,11 +100,11 @@ func (r *RadixHeap[T, G]) Insert(key T, val G) {
 // ilustration of this insert & extract-min operations of radix heap (the insert() and extractmin() in this implementation differs slightly): https://ocw.mit.edu/courses/15-082j-network-optimization-fall-2010/b9a6748a2d111ab5831efab32f6c47ff_MIT15_082JF10_av09.pdf
 //
 // number of times extract-min can be called in nonempty radix heap, is the same as number of insert operations which at most n times.
-// any sequence of n times insert and extract-min operations on initially empty radix-heap has a total cost at most O(n*logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32/MaxUint64)
+// any sequence of n times insert and extract-min operations on initially empty radix-heap has a total cost at most O(n*logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32 or MaxUint64)
 // why? after all n extract-min operations, for each pair, the distribute operations for this pair from old position to the latest position (until this pair extracted from the pq) has total cost at most O(logC),
 // this is because the number of buckets is ceil(log(C+1))+1. summing over all n pairs inserted in this n sequence of insert and extract-min operations, we got total cost O(n*logC)
 // the amortized (aggregate analysis) cost of an extract-min operation is O(n*logc)/n=O(logC)
-// amortized O(logC), where C=maximum key of any priority queue node (in this implementation  C=MaxUint32/MaxUint64)
+// amortized O(logC), where C=maximum key of any priority queue node (in this implementation  C=MaxUint32 or MaxUint64)
 func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 	if len(r.buckets[0]) == 0 {
 		// if first bucket is empty
