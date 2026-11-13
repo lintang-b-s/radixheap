@@ -41,14 +41,14 @@ func TestInsertExtractUint32(t *testing.T) {
 				1 << 17, 1 << 3, 1 << 29, 0, 1 << 11, 1 << 24, 1 << 0, 1 << 19,
 				1 << 7, 1 << 30, 1 << 14, 1 << 2, 1 << 26, 1 << 9, 1 << 21, 1 << 5,
 				1 << 28, 1 << 12, 1 << 1, 1 << 23, 1 << 16, 1 << 4, 1 << 27, 1 << 10,
-				1 << 20, 1 << 6, 1 << 25, 1 << 15, 1 << 8, 1 << 22, 1 << 13, 1 << 18,
+				1 << 20, 1 << 6, 1 << 25, 1 << 15, 1 << 8, 1 << 22, 1 << 13, 1 << 18, 1 << 31,
 			},
 			wantSortedInput: []uint32{
 				0,
 				1 << 0, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5, 1 << 6, 1 << 7,
 				1 << 8, 1 << 9, 1 << 10, 1 << 11, 1 << 12, 1 << 13, 1 << 14, 1 << 15,
 				1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20, 1 << 21, 1 << 22, 1 << 23,
-				1 << 24, 1 << 25, 1 << 26, 1 << 27, 1 << 28, 1 << 29, 1 << 30,
+				1 << 24, 1 << 25, 1 << 26, 1 << 27, 1 << 28, 1 << 29, 1 << 30, 1 << 31,
 			},
 		},
 	}
@@ -227,6 +227,59 @@ func TestHeapSortLike(t *testing.T) {
 
 	if !slices.Equal(gotSortedArr, wantSortedArr) {
 		t.Errorf("heapsortLike= %v, want %v", gotSortedArr, wantSortedArr)
+	}
+}
+
+func TestInsertClearInsertExtract(t *testing.T) {
+	testCases := []struct {
+		name      string
+		input     []uint32
+		inputLast []uint32
+
+		wantSortedInput []uint32
+	}{
+
+		{
+			name:  "insert 99, 88, 22, 666, 888, 333, clears, insert tc.inputLast",
+			input: []uint32{99, 88, 22, 666, 888, 333},
+			inputLast: []uint32{
+				1 << 17, 1 << 3, 1 << 29, 0, 1 << 11, 1 << 24, 1 << 0, 1 << 19,
+				1 << 7, 1 << 30, 1 << 14, 1 << 2, 1 << 26, 1 << 9, 1 << 21, 1 << 5,
+				1 << 28, 1 << 12, 1 << 1, 1 << 23, 1 << 16, 1 << 4, 1 << 27, 1 << 10,
+				1 << 20, 1 << 6, 1 << 25, 1 << 15, 1 << 8, 1 << 22, 1 << 13, 1 << 18, 1 << 31,
+			},
+			wantSortedInput: []uint32{
+				0,
+				1 << 0, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5, 1 << 6, 1 << 7,
+				1 << 8, 1 << 9, 1 << 10, 1 << 11, 1 << 12, 1 << 13, 1 << 14, 1 << 15,
+				1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20, 1 << 21, 1 << 22, 1 << 23,
+				1 << 24, 1 << 25, 1 << 26, 1 << 27, 1 << 28, 1 << 29, 1 << 30, 1 << 31,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rdx := NewRadixHeap[uint32, uint32]()
+			for _, key := range tc.input {
+				rdx.Insert(key, key)
+			}
+
+			rdx.Clear()
+			for _, key := range tc.inputLast {
+				rdx.Insert(key, key)
+			}
+
+			gotSortedInput := make([]uint32, 0, len(tc.input))
+			for !rdx.Empty() {
+				skey, _ := rdx.ExtractMin()
+				gotSortedInput = append(gotSortedInput, skey)
+			}
+
+			if !slices.Equal(gotSortedInput, tc.wantSortedInput) {
+				t.Errorf("heapsortLike= %v, want %v", gotSortedInput, tc.wantSortedInput)
+			}
+		})
 	}
 }
 

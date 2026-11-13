@@ -163,3 +163,13 @@ func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 func (r *RadixHeap[T, G]) Empty() bool {
 	return r.size == 0
 }
+
+// Clear clears the radix heap
+func (r *RadixHeap[T, G]) Clear() {
+	r.lastExtractedKey = 0
+	r.size = 0
+	for i := range r.buckets {
+		r.buckets[i] = r.buckets[i][:0]
+		r.bucketsMin[i] = infinity[T]()
+	}
+}
