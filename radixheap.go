@@ -27,7 +27,7 @@ func newPair[T unsignedKeyType, G comparable](k T, v G) pair[T, G] {
 
 // RadixHeap represents an RadixHeap, a monotone priority queue using binary representation of unsigned integers.
 type RadixHeap[T unsignedKeyType, G comparable] struct {
-	// the size (number of pairs inserted) of the radix heap
+	// the size (number of pairs currently stored) of the radix heap
 	size uint64
 	// last extracted key.
 	// in dijkstra algorithm, each iteration we call  exctract-min to get the unexplored vertex with minimum distance from s.
@@ -35,8 +35,10 @@ type RadixHeap[T unsignedKeyType, G comparable] struct {
 	lastExtractedKey T
 	// each bucket contains (key, value) pairs, with lower buckets store pairs with smaller key.
 	// this one-level radix heap contains ceil(log(C+1))+1 buckets, where C=maximum key of any priority queue node (in this implementation  C=MaxUint32 or MaxUint64).
+	// the invariant after each operation is: for each pair.key in in i-th bucket, the i-1 is the largest position (0-indexed) in which
+	// the binary representation of pair.key and r.lastExtractedKey differ, or i = 0 if pair.key == r.lastExtractedKey.
 	buckets [][]pair[T, G]
-	// i-th bucketMin contains the minimum-key pair of the i-th bucket
+	// i-th bucketMin contains the minimum-key in the i-th bucket
 	bucketsMin []T
 	// is the key type uint32
 	isUint32 bool
@@ -74,7 +76,8 @@ func NewRadixHeap[T unsignedKeyType, G comparable]() *RadixHeap[T, G] {
 
 // findBucket find bucket-i that will contain key x
 // by computing i such that the position i-1 is the largest position (0-indexed) in which
-// the binary representation of x and r.lastExtractedKey differ. O(1).
+// the binary representation of x and r.lastExtractedKey differ, or i = 0 if x == r.lastExtractedKey. O(1).
+// i=msd(x, r.lastExtractedKey), msd() is the operation described above.
 // this implementation follows section 5 variant of section 2 one-level radix heap described in section 5 & section 2 ref [1]
 func (r *RadixHeap[T, G]) findBucket(x T) uint64 {
 	if r.isUint32 {
@@ -86,6 +89,9 @@ func (r *RadixHeap[T, G]) findBucket(x T) uint64 {
 }
 
 // Insert insert (key, val) pair into the radix heap.
+//
+// detailed explanation of this radix heap implementation (only differs in the msd(x, r.lastExtractedKey)=0 when x=r.lastExtractedKey):
+// https://web.archive.org/web/20261113012457/https://groups.uni-paderborn.de/fg-qi/courses/UPB_FUNDAMENTAL_ALGS/W2018/notes/GA2-AdvancedHeaps.pdf
 //
 // O(1) amortized
 func (r *RadixHeap[T, G]) Insert(key T, val G) {
@@ -103,6 +109,9 @@ func (r *RadixHeap[T, G]) Insert(key T, val G) {
 // then distribute the remaining pairs in bucket j among buckets of smaller index by using findBucket().
 //
 // ilustration of this insert & extract-min operations of radix heap (the insert() and extractmin() in this implementation differs slightly): https://ocw.mit.edu/courses/15-082j-network-optimization-fall-2010/b9a6748a2d111ab5831efab32f6c47ff_MIT15_082JF10_av09.pdf
+//
+// detailed explanation of this radix heap implementation (only differs in the msd(x, r.lastExtractedKey)=0 when x=r.lastExtractedKey):
+// https://web.archive.org/web/20261113012457/https://groups.uni-paderborn.de/fg-qi/courses/UPB_FUNDAMENTAL_ALGS/W2018/notes/GA2-AdvancedHeaps.pdf
 //
 // number of times extract-min can be called in nonempty radix heap, is the same as number of insert operations which at most n times.
 // any sequence of n times insert and extract-min operations on initially empty radix-heap has a total cost at most O(n*logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32 or MaxUint64)
@@ -129,6 +138,10 @@ func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 		}
 
 		// empty the j-th bucket
+		// the j-th bucket must be empty in here
+		// the r.lastExtractedKey right before the previous loop above is updated to the minimum key of pair in the j-th bucket
+		// also, all pairs in j-th bucket has (j-1)-th (0-indexed) bit set in binary representation of their pair.key, and all q-th bit of pair.key ^ r.lastExtractedKey are off (unset or 0) for q > j-1
+		// so, in previous loop, all msd(pair.key, r.lastExtractedKey) < j, which causes all pairs in j-th bucket distributed to lower bucket m with m < j
 		r.buckets[j] = r.buckets[j][:0]
 		r.bucketsMin[j] = infinity[T]()
 	}

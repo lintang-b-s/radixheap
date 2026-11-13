@@ -10,29 +10,29 @@ import (
 
 func TestInsertExtractUint32(t *testing.T) {
 	testCases := []struct {
-		name                string
-		input               []uint32
-		expectedSortedInput []uint32
+		name            string
+		input           []uint32
+		wantSortedInput []uint32
 	}{
 		{
-			name:                "input [90, 20, 60, 100, 70, 30, 40, 80, 10, 50], expected sorted input=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]",
-			input:               []uint32{90, 20, 60, 100, 70, 30, 40, 80, 10, 50},
-			expectedSortedInput: []uint32{10, 20, 30, 40, 50, 60, 70, 80, 90, 100},
+			name:            "input [90, 20, 60, 100, 70, 30, 40, 80, 10, 50], expected sorted input=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]",
+			input:           []uint32{90, 20, 60, 100, 70, 30, 40, 80, 10, 50},
+			wantSortedInput: []uint32{10, 20, 30, 40, 50, 60, 70, 80, 90, 100},
 		},
 		{
-			name:                "duplicate keys",
-			input:               []uint32{15, 10, 15, 0, 10, 0, 10},
-			expectedSortedInput: []uint32{0, 0, 10, 10, 10, 15, 15},
+			name:            "duplicate keys",
+			input:           []uint32{15, 10, 15, 0, 10, 0, 10},
+			wantSortedInput: []uint32{0, 0, 10, 10, 10, 15, 15},
 		},
 		{
-			name:                "large uint32 values",
-			input:               []uint32{4294967294, 1000000000, 500, 4294967290, 0},
-			expectedSortedInput: []uint32{0, 500, 1000000000, 4294967290, 4294967294},
+			name:            "large uint32 values",
+			input:           []uint32{4294967294, 1000000000, 500, 4294967290, 0},
+			wantSortedInput: []uint32{0, 500, 1000000000, 4294967290, 4294967294},
 		},
 		{
-			name:                "exactly one item per bucket",
-			input:               []uint32{1 << 31, 1 << 16, 1 << 8, 1 << 4, 1 << 2, 1 << 1, 1 << 0, 0},
-			expectedSortedInput: []uint32{0, 1, 2, 4, 16, 256, 65536, 1 << 31},
+			name:            "exactly one item per bucket",
+			input:           []uint32{1 << 31, 1 << 16, 1 << 8, 1 << 4, 1 << 2, 1 << 1, 1 << 0, 0},
+			wantSortedInput: []uint32{0, 1, 2, 4, 16, 256, 65536, 1 << 31},
 		},
 
 		{
@@ -43,7 +43,7 @@ func TestInsertExtractUint32(t *testing.T) {
 				1 << 28, 1 << 12, 1 << 1, 1 << 23, 1 << 16, 1 << 4, 1 << 27, 1 << 10,
 				1 << 20, 1 << 6, 1 << 25, 1 << 15, 1 << 8, 1 << 22, 1 << 13, 1 << 18,
 			},
-			expectedSortedInput: []uint32{
+			wantSortedInput: []uint32{
 				0,
 				1 << 0, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5, 1 << 6, 1 << 7,
 				1 << 8, 1 << 9, 1 << 10, 1 << 11, 1 << 12, 1 << 13, 1 << 14, 1 << 15,
@@ -66,15 +66,15 @@ func TestInsertExtractUint32(t *testing.T) {
 				gotSortedInput = append(gotSortedInput, skey)
 			}
 
-			if len(gotSortedInput) != len(tc.expectedSortedInput) {
-				t.Errorf("length of gotSortedInput: %v not the same as length of  expectedSortedInput: %v", len(gotSortedInput),
-					len(tc.expectedSortedInput))
+			if len(gotSortedInput) != len(tc.wantSortedInput) {
+				t.Errorf("length of gotSortedInput: %v not the same as length of  wantSortedInput: %v", len(gotSortedInput),
+					len(tc.wantSortedInput))
 			}
 
 			for i := 0; i < len(gotSortedInput); i++ {
-				if gotSortedInput[i] != tc.expectedSortedInput[i] {
-					t.Errorf("%v-th element of gotSortedInput:%v not the same as %v-th element of expectedSortedInput: %v", i,
-						gotSortedInput[i], i, tc.expectedSortedInput[i])
+				if gotSortedInput[i] != tc.wantSortedInput[i] {
+					t.Errorf("%v-th element of gotSortedInput:%v not the same as %v-th element of wantSortedInput: %v", i,
+						gotSortedInput[i], i, tc.wantSortedInput[i])
 				}
 			}
 		})
@@ -83,29 +83,29 @@ func TestInsertExtractUint32(t *testing.T) {
 
 func TestInsertExtractUint64(t *testing.T) {
 	testCases := []struct {
-		name                string
-		input               []uint64
-		expectedSortedInput []uint64
+		name            string
+		input           []uint64
+		wantSortedInput []uint64
 	}{
 		{
-			name:                "input [90, 20, 60, 100, 70, 30, 40, 80, 10, 50], expected sorted input=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]",
-			input:               []uint64{90, 20, 60, 100, 70, 30, 40, 80, 10, 50},
-			expectedSortedInput: []uint64{10, 20, 30, 40, 50, 60, 70, 80, 90, 100},
+			name:            "input [90, 20, 60, 100, 70, 30, 40, 80, 10, 50], expected sorted input=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]",
+			input:           []uint64{90, 20, 60, 100, 70, 30, 40, 80, 10, 50},
+			wantSortedInput: []uint64{10, 20, 30, 40, 50, 60, 70, 80, 90, 100},
 		},
 		{
-			name:                "duplicate keys",
-			input:               []uint64{15, 10, 15, 0, 10, 0, 10},
-			expectedSortedInput: []uint64{0, 0, 10, 10, 10, 15, 15},
+			name:            "duplicate keys",
+			input:           []uint64{15, 10, 15, 0, 10, 0, 10},
+			wantSortedInput: []uint64{0, 0, 10, 10, 10, 15, 15},
 		},
 		{
-			name:                "large uint64 values",
-			input:               []uint64{4294967294, 1000000000, 500, 4294967290, 0},
-			expectedSortedInput: []uint64{0, 500, 1000000000, 4294967290, 4294967294},
+			name:            "large uint64 values",
+			input:           []uint64{4294967294, 1000000000, 500, 4294967290, 0},
+			wantSortedInput: []uint64{0, 500, 1000000000, 4294967290, 4294967294},
 		},
 		{
-			name:                "exactly one item per bucket",
-			input:               []uint64{1 << 31, 1 << 16, 1 << 8, 1 << 4, 1 << 2, 1 << 1, 1 << 0, 0},
-			expectedSortedInput: []uint64{0, 1, 2, 4, 16, 256, 65536, 1 << 31},
+			name:            "exactly one item per bucket",
+			input:           []uint64{1 << 31, 1 << 16, 1 << 8, 1 << 4, 1 << 2, 1 << 1, 1 << 0, 0},
+			wantSortedInput: []uint64{0, 1, 2, 4, 16, 256, 65536, 1 << 31},
 		},
 
 		{
@@ -116,7 +116,7 @@ func TestInsertExtractUint64(t *testing.T) {
 				1 << 28, 1 << 12, 1 << 1, 1 << 23, 1 << 16, 1 << 4, 1 << 27, 1 << 10,
 				1 << 20, 1 << 6, 1 << 25, 1 << 15, 1 << 8, 1 << 22, 1 << 13, 1 << 18,
 			},
-			expectedSortedInput: []uint64{
+			wantSortedInput: []uint64{
 				0,
 				1 << 0, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5, 1 << 6, 1 << 7,
 				1 << 8, 1 << 9, 1 << 10, 1 << 11, 1 << 12, 1 << 13, 1 << 14, 1 << 15,
@@ -139,21 +139,73 @@ func TestInsertExtractUint64(t *testing.T) {
 				gotSortedInput = append(gotSortedInput, skey)
 			}
 
-			if len(gotSortedInput) != len(tc.expectedSortedInput) {
-				t.Errorf("length of gotSortedInput: %v not the same as length of  expectedSortedInput: %v", len(gotSortedInput),
-					len(tc.expectedSortedInput))
+			if len(gotSortedInput) != len(tc.wantSortedInput) {
+				t.Errorf("length of gotSortedInput: %v not the same as length of  wantSortedInput: %v", len(gotSortedInput),
+					len(tc.wantSortedInput))
 			}
 
 			for i := 0; i < len(gotSortedInput); i++ {
-				if gotSortedInput[i] != tc.expectedSortedInput[i] {
-					t.Errorf("%v-th element of gotSortedInput:%v not the same as %v-th element of expectedSortedInput: %v", i,
-						gotSortedInput[i], i, tc.expectedSortedInput[i])
+				if gotSortedInput[i] != tc.wantSortedInput[i] {
+					t.Errorf("%v-th element of gotSortedInput:%v not the same as %v-th element of wantSortedInput: %v", i,
+						gotSortedInput[i], i, tc.wantSortedInput[i])
 				}
 			}
 		})
 	}
 }
 
+func TestInsertExtractInterleave(t *testing.T) {
+	testCases := []struct {
+		name         string
+		input        [][]uint32
+		extractCount []uint32
+		want         []uint32
+	}{
+		{
+			name: "insert [8, 2, 9, 5, 7],  extract 2 pairs, insert [10, 19, 13, 23, 24], extract 3 pairs, insert [101, 100], extract 1 pair, extract all remaining pairs",
+			input: [][]uint32{
+				{8, 2, 9, 5, 7},
+				{10, 19, 13, 23, 24},
+				{101, 100},
+			},
+			extractCount: []uint32{2, 3, 1},
+			want:         []uint32{13, 19, 23, 24, 100, 101},
+		},
+		{
+			name: "insert [5000, 3000, 4000, 9000], extract 1 pair, insert [6000, 12000], extract 2 pairs, extract all remaining pairs",
+			input: [][]uint32{
+				{5000, 3000, 4000, 9000},
+				{6000, 12000},
+			},
+			extractCount: []uint32{1, 2},
+			want:         []uint32{6000, 9000, 12000},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rdx := NewRadixHeap[uint32, uint32]()
+			for i, batch := range tc.input {
+				for _, key := range batch {
+					rdx.Insert(key, key)
+				}
+				for range tc.extractCount[i] {
+					rdx.ExtractMin()
+				}
+			}
+
+			got := make([]uint32, 0)
+			for !rdx.Empty() {
+				key, _ := rdx.ExtractMin()
+				got = append(got, key)
+			}
+
+			if !slices.Equal(got, tc.want) {
+				t.Errorf("got= %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
 func TestHeapSortLike(t *testing.T) {
 	n := uint32(5_000_000)
 	rdx := NewRadixHeap[uint32, uint32]()
