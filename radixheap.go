@@ -81,10 +81,10 @@ func NewRadixHeap[T unsignedKeyType, G comparable]() *RadixHeap[T, G] {
 // this implementation follows section 5 variant of section 2 one-level radix heap described in section 5 & section 2 ref [1]
 func (r *RadixHeap[T, G]) findBucket(x T) uint64 {
 	if r.isUint32 {
-		i := 32 - bits.LeadingZeros32(uint32(x^r.lastExtractedKey))
+		i := bits.Len32(uint32(x ^ r.lastExtractedKey))
 		return uint64(i)
 	}
-	i := 64 - bits.LeadingZeros64(uint64(x^r.lastExtractedKey))
+	i := bits.Len64(uint64(x ^ r.lastExtractedKey))
 	return uint64(i)
 }
 
