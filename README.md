@@ -48,10 +48,10 @@ BenchmarkStdLibHeapSimple-12            33725971               573.8 ns/op      
 
 ### Dijkstra SSSP USA road network DIMACS
 
-Dijkstra Single-source shortest path (SSSP) on DIMACS 9th implementation challenge USA Road Network Graph ([download](https://web.archive.org/web/20261020102152/https://www.diag.uniroma1.it/~challenge9/download.shtml)), with 23million vertices & 58 million edges. see `dijkstra_test.go`.
+Dijkstra Single-source shortest path (SSSP) on DIMACS 9th implementation challenge USA Road Network Graph ([download](https://web.archive.org/web/20261020102152/https://www.diag.uniroma1.it/~challenge9/download.shtml)), with 24 million vertices & 58 million edges. see `dijkstra_test.go`.
 
 ```
-BenchmarkDijkstraRadixHeap-12    	      15	         4.462 s/op	199481824 B/op	     368 allocs/op
+BenchmarkDijkstraRadixHeap-12                 18                 3.971 s/op     199292042 B/op       366 allocs/op
 
 BenchmarkDijkstraStdLibHeap-12    	       3	        10.17 s/op	805779026 B/op	25575264 allocs/op
 ```
