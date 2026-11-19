@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/lintang-b-s/radixheap?status.svg)](https://godoc.org/github.com/lintang-b-s/radixheap)
 [![codecov](https://codecov.io/github/lintang-b-s/radixheap/graph/badge.svg?token=AVXOSD6FQH)](https://codecov.io/github/lintang-b-s/radixheap)
 
-an radix heap implementation for Go. Radix heap [[1]](#ref1) is a monotone priority queue using binary representation of unsigned integers. A monotone priority is a priority queue that the keys returned by successive `extract-min` calls are monotonically increasing, like in dijkstra algorithm. The cost of `extract-min` operation is amortized O(logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32 or MaxUint64), and `insert` is amortized O(1). A radix heap can be implemented to speed up Dijkstra's algorithm when edge weights are unsigned integers, as described in the paper [[1]](#ref1).
+an radix heap implementation for Go. Radix heap [[1]](#ref1) is a monotone priority queue using binary representation of unsigned integers, designed for speeding up dijkstra single-source shortest path algorithm with nonnegative integer edge weights, as described in the paper [[1]](#ref1). A monotone priority is a priority queue that the keys returned by successive `extract-min` calls are monotonically increasing, like in dijkstra algorithm. The cost of `extract-min` operation is amortized O(logC), where C=maximum nonnegative edge weight, and `insert` is amortized O(1).
 
 ## Usage
 

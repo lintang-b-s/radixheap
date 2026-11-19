@@ -34,7 +34,7 @@ type RadixHeap[T unsignedKeyType, G comparable] struct {
 	// this lastExtractedKey store the distance from s (or key of the priority queue node) of the latest extracted vertex in current iteration of dijkstra.
 	lastExtractedKey T
 	// each bucket contains (key, value) pairs, with lower buckets store pairs with smaller key.
-	// this one-level radix heap contains ceil(log(C+1))+1 buckets, where C=maximum key of any priority queue node (in this implementation  C=MaxUint32 or MaxUint64).
+	// this one-level radix heap contains K+1 buckets, where K=number of bits to represent the pair.key (32 or 64).
 	// the invariant after each operation is: for each pair.key in in i-th bucket, the i-1 is the largest position (0-indexed) in which
 	// the binary representation of pair.key and r.lastExtractedKey differ, or i = 0 if pair.key == r.lastExtractedKey.
 	buckets [][]pair[T, G]
@@ -114,18 +114,22 @@ func (r *RadixHeap[T, G]) Insert(key T, val G) {
 // https://web.archive.org/web/20261113012457/https://groups.uni-paderborn.de/fg-qi/courses/UPB_FUNDAMENTAL_ALGS/W2018/notes/GA2-AdvancedHeaps.pdf
 //
 // number of times extract-min can be called in nonempty radix heap, is the same as number of insert operations which at most n times.
-// any sequence of n times insert and extract-min operations on initially empty radix-heap has a total cost at most O(n*logC), where C=maximum key of any priority queue node (in this implementation C=MaxUint32 or MaxUint64)
+// any sequence of n times insert and extract-min operations on initially empty radix-heap has a total cost at most O(n*logC), where C=maximum nonnegative edge weight 
 // why? after all n extract-min operations, for each pair, the distribute operations for this pair from old position to the latest position (until this pair extracted from the pq) has total cost at most O(logC),
-// this is because the number of buckets is ceil(log(C+1))+1. summing over all n pairs inserted in this n sequence of insert and extract-min operations, we got total cost O(n*logC)
+// this is because the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is ceil(log(C+1)). summing over all n pairs inserted in this n sequence of insert and extract-min operations, we got total cost O(n*logC)
 // the amortized (aggregate analysis) cost of an extract-min operation is O(n*logc)/n=O(logC)
 //
-// amortized O(logC), where C=maximum key of any priority queue node (in this implementation  C=MaxUint32 or MaxUint64)
+// This "the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is ceil(log(C+1))" is because in dijkstra, for every labeled vertex 
+// $v \neq s$ (those vertex with finite tentative cost whose minimum cost is not yet known, and still in priority queue), $d(v) \in [d(x)...d(x)+C]$, 
+// where x is the most recently explored vertex (those vertex whose minimum cost is known, and already extracted from priority queue) (Rahuja et al. (1990)).
+//  
+// amortized O(logC), where C=maximum nonnegative edge weight.
 func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 	if len(r.buckets[0]) == 0 {
 		// if first bucket is empty
 		// find first non-empty bucket
 		j := uint64(1)
-		for ; len(r.buckets[j]) == 0; j++ { // O(logC), because the number of buckets is ceil(log(C+1))+1
+		for ; len(r.buckets[j]) == 0; j++ { // O(logC), because the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is ceil(log(C+1)) 
 		}
 		r.lastExtractedKey = r.bucketsMin[j] // update last extracted key
 
