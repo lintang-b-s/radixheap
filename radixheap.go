@@ -116,10 +116,10 @@ func (r *RadixHeap[T, G]) Insert(key T, val G) {
 // number of times extract-min can be called in nonempty radix heap, is the same as number of insert operations which at most n times.
 // any sequence of n times insert and extract-min operations on initially empty radix-heap has a total cost at most O(n*logC), where C=maximum nonnegative edge weight 
 // why? after all n extract-min operations, for each pair, the distribute operations for this pair from old position to the latest position (until this pair extracted from the pq) has total cost at most O(logC),
-// this is because the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is ceil(log(C+1)). summing over all n pairs inserted in this n sequence of insert and extract-min operations, we got total cost O(n*logC)
+// this is because the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is at most ceil(log(C+1)). summing over all n pairs inserted in this n sequence of insert and extract-min operations, we got total cost O(n*logC)
 // the amortized (aggregate analysis) cost of an extract-min operation is O(n*logc)/n=O(logC)
 //
-// This "the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is ceil(log(C+1))" is because in dijkstra, for every labeled vertex 
+// This "the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is at most ceil(log(C+1))" is because in dijkstra, for every labeled vertex 
 // $v \neq s$ (those vertex with finite tentative cost whose minimum cost is not yet known, and still in priority queue), $d(v) \in [d(x)...d(x)+C]$, 
 // where x is the most recently explored vertex (those vertex whose minimum cost is known, and already extracted from priority queue) (Rahuja et al. (1990)).
 //  
@@ -129,7 +129,7 @@ func (r *RadixHeap[T, G]) ExtractMin() (T, G) {
 		// if first bucket is empty
 		// find first non-empty bucket
 		j := uint64(1)
-		for ; len(r.buckets[j]) == 0; j++ { // O(logC), because the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is ceil(log(C+1)) 
+		for ; len(r.buckets[j]) == 0; j++ { // O(logC), because the number of buckets between the bucket that contains lastExtractedKey and this j-th bucket is at most ceil(log(C+1)) 
 		}
 		r.lastExtractedKey = r.bucketsMin[j] // update last extracted key
 
